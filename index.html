@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MICRAJ AI Student Support Portal</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f4f7fb;color:#172033}
+header{background:#155eef;color:white;padding:16px 5%;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.logo{font-size:20px;font-weight:800}.logo span{font-weight:400;opacity:.8}
+nav button{border:0;border-radius:9px;padding:10px 15px;margin-left:7px;cursor:pointer;font-weight:600}
+nav .light{background:white;color:#155eef}.navDark{background:#0d47b8;color:white}
+.container{width:min(1150px,92%);margin:30px auto}.hero{background:linear-gradient(135deg,#e8f0ff,#fff);padding:45px;border-radius:25px;border:1px solid #dce7ff;margin-bottom:25px}
+.badge{display:inline-block;background:#155eef;color:#fff;padding:7px 12px;border-radius:30px;font-size:12px;font-weight:700}
+h1{font-size:clamp(34px,5vw,58px);line-height:1.03;margin:15px 0}h2{margin-top:0}
+.hero p{font-size:18px;color:#526070;max-width:720px;line-height:1.6}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:22px}.card{background:white;border-radius:18px;padding:25px;box-shadow:0 7px 25px #17203312;margin-bottom:20px}
+label{display:block;font-weight:700;margin:14px 0 7px}input,select,textarea{width:100%;padding:13px;border:1px solid #d5dce8;border-radius:10px;font:inherit;background:#fff}
+textarea{min-height:130px;resize:vertical}.btn{border:0;background:#155eef;color:white;padding:13px 18px;border-radius:10px;font-weight:700;cursor:pointer}.btn.secondary{background:#edf3ff;color:#155eef}.btn.success{background:#198754}.btn.danger{background:#dc3545}
+.notice{padding:13px;border-radius:10px;background:#eef6ff;border:1px solid #cfe2ff;margin-top:15px}.hidden{display:none}.muted{color:#687385}.ticket{border:1px solid #e1e6ef;border-radius:12px;padding:15px;margin:10px 0;cursor:pointer}.ticket:hover{background:#f8faff}
+.badge2{display:inline-block;padding:5px 9px;border-radius:20px;background:#eef2f7;font-size:12px}.resolved{background:#d1e7dd;color:#0f5132}.pending{background:#fff3cd;color:#664d03}.reopened{background:#f8d7da;color:#842029}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:white;border-radius:15px;padding:20px;box-shadow:0 5px 18px #1720330c}.stat strong{font-size:30px;display:block;margin-top:5px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:12px;border-bottom:1px solid #e8ebf0;font-size:14px}
+.chat{max-height:420px;overflow:auto;background:#f7f9fc;border-radius:14px;padding:15px}.msg{padding:12px 15px;border-radius:14px;margin:8px 0;max-width:85%;line-height:1.45}.ai{background:white;border:1px solid #e3e8f0}.user{background:#155eef;color:white;margin-left:auto}
+footer{text-align:center;color:#7b8492;padding:35px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}header{flex-wrap:wrap;gap:10px}.hero{padding:28px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">MICRAJ AI <span>Student Support Portal</span></div>
+  <nav>
+    <button class="light" onclick="showPage('student')">Student Help</button>
+    <button class="navDark" onclick="showPage('dashboard')">Office Dashboard</button>
+  </nav>
+</header>
+
+<main class="container">
+<section id="studentPage">
+  <div class="hero">
+    <span class="badge">AI-POWERED UNIVERSITY HELP DESK</span>
+    <h1>One place for every student question.</h1>
+    <p>Ask your question in normal language. MICRAJ AI identifies the problem, directs it to the appropriate office, tracks the case and returns the official response to you.</p>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>Submit a Student Query</h2>
+        <p class="muted">The system will automatically classify and route your request.</p>
+        <form id="queryForm">
+          <div class="grid" style="grid-template-columns:1fr 1fr">
+            <div><label>Student Number *</label><input id="studentNo" required placeholder="e.g. CIS-0-3038-2/2025"></div>
+            <div><label>Full Name *</label><input id="studentName" required></div>
+          </div>
+          <div class="grid" style="grid-template-columns:1fr 1fr">
+            <div><label>Email *</label><input id="studentEmail" type="email" required></div>
+            <div><label>Programme</label><input id="programme" placeholder="e.g. Computer Information Systems"></div>
+          </div>
+          <label>Year of Study</label>
+          <select id="year"><option>First Year</option><option>Second Year</option><option>Third Year</option><option>Fourth Year</option></select>
+          <label>Subject *</label><input id="subject" required placeholder="Brief description of your problem">
+          <label>Your Question *</label><textarea id="message" required placeholder="Example: I paid my fees but my portal still shows a balance..."></textarea>
+          <div id="classification" class="notice hidden"></div>
+          <button class="btn" type="submit" style="margin-top:15px">Submit Query</button>
+        </form>
+      </div>
+    </div>
+
+    <aside>
+      <div class="card">
+        <h2>AI Help</h2>
+        <div class="chat" id="chat">
+          <div class="msg ai"><b>MICRAJ AI:</b> Hello! Tell me what problem you are experiencing and I will identify the appropriate university office.</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <input id="chatInput" placeholder="Ask a quick question...">
+          <button class="btn" onclick="askAI()">Ask</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Track a Ticket</h3>
+        <input id="trackInput" placeholder="MICRAJ-2026-00001">
+        <button class="btn secondary" onclick="trackTicket()" style="margin-top:10px;width:100%">Track Query</button>
+        <div id="trackResult"></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section id="dashboardPage" class="hidden">
+  <div class="hero" style="padding:30px">
+    <span class="badge">OFFICE MANAGEMENT</span>
+    <h1 style="font-size:42px">Student Query Dashboard</h1>
+    <p>View incoming queries, route them, respond to students and manage feedback.</p>
+  </div>
+  <div class="stats">
+    <div class="stat">Total<strong id="totalStat">0</strong></div>
+    <div class="stat">Pending<strong id="pendingStat">0</strong></div>
+    <div class="stat">Resolved<strong id="resolvedStat">0</strong></div>
+    <div class="stat">Reopened<strong id="reopenedStat">0</strong></div>
+  </div>
+  <div class="card" style="margin-top:22px">
+    <h2>Queries</h2>
+    <div style="overflow:auto"><table><thead><tr><th>Ticket</th><th>Student</th><th>Problem</th><th>Office</th><th>Priority</th><th>Status</th><th>Action</th></tr></thead><tbody id="ticketRows"></tbody></table></div>
+  </div>
+  <div id="officePanel" class="card hidden"></div>
+</section>
+</main>
+<footer>MICRAJ AI Student Query Management System • Runnable browser prototype</footer>
+
+<script>
+const KEY="micraj_tickets_v1";
+const offices={
+Finance:"Finance Office",Academic:"Academic / Examinations Office",ICT:"ICT Office",
+Admissions:"Admissions Office",Library:"Library",Accommodation:"Accommodation / Student Affairs Office",
+"Student Affairs":"Student Affairs Office",General:"Student Support / Help Desk"
+};
+const keywords={
+Finance:["fee","fees","payment","paid","balance","refund","finance","clearance","invoice","receipt","tuition","money"],
+Academic:["mark","marks","grade","grades","exam","examination","result","results","course","unit","units","registration","register","assignment","lecturer","academic","transcript","graduation"],
+ICT:["password","portal","login","log in","wifi","wi-fi","internet","email","account","computer","technical","lms","moodle"],
+Admissions:["admission","application","applying","acceptance","joining","intake","transfer","admitted"],
+Library:["library","book","books","borrow","borrowing","fine","fines","journal","database","ebook","e-book"],
+Accommodation:["hostel","hostels","accommodation","room","rooms","residence","housing","bed"],
+"Student Affairs":["student id","student card","id card","welfare","complaint","discipline","counselling","counseling","club","society"]
+};
+function getTickets(){return JSON.parse(localStorage.getItem(KEY)||"[]")}
+function saveTickets(t){localStorage.setItem(KEY,JSON.stringify(t))}
+function classify(text){
+  let t=text.toLowerCase(), scores={};
+  Object.keys(keywords).forEach(c=>scores[c]=keywords[c].filter(w=>t.includes(w)).length);
+  let best=Object.keys(scores).sort((a,b)=>scores[b]-scores[a])[0], score=scores[best];
+  if(!score)return {category:"General",office:offices.General,confidence:45};
+  return {category:best,office:offices[best],confidence:Math.min(98,55+score*10+Math.min(5,t.split(/\s+/).length))};
+}
+function priority(text){return /urgent|emergency|immediately|fraud|hacked|stolen|security|exam today|deadline today/i.test(text)?"High":"Normal"}
+document.getElementById("message").addEventListener("input",e=>{
+  if(e.target.value.trim().length<8)return;
+  let c=classify(e.target.value+" "+document.getElementById("subject").value);
+  let el=document.getElementById("classification");el.classList.remove("hidden");
+  el.innerHTML=`<b>AI preliminary routing:</b> ${c.category} → ${c.office} (${c.confidence}% confidence)`;
+});
+document.getElementById("queryForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  let tickets=getTickets(), id=tickets.length+1;
+  let msg=document.getElementById("message").value, sub=document.getElementById("subject").value;
+  let c=classify(msg+" "+sub);
+  let ticket={
+    id,ticketNo:`MICRAJ-${new Date().getFullYear()}-${String(id).padStart(5,"0")}`,
+    studentNo:studentNo.value,name:studentName.value,email:studentEmail.value,
+    programme:programme.value,year:year.value,subject:sub,message:msg,
+    category:c.category,office:c.office,confidence:c.confidence,priority:priority(msg),
+    status:"Assigned",created:new Date().toLocaleString(),responses:[],feedback:null
+  };
+  tickets.push(ticket);saveTickets(tickets);
+  document.getElementById("queryForm").reset();document.getElementById("classification").classList.add("hidden");
+  alert(`Query submitted successfully!\n\nYour ticket number is ${ticket.ticketNo}\n\nAssigned to: ${ticket.office}`);
+  showTicket(ticket.ticketNo);
+});
+function showPage(page){
+  document.getElementById("studentPage").classList.toggle("hidden",page!=="student");
+  document.getElementById("dashboardPage").classList.toggle("hidden",page!=="dashboard");
+  if(page==="dashboard")renderDashboard();
+  window.scrollTo(0,0);
+}
+function showTicket(no){
+  document.getElementById("trackInput").value=no;showPage("student");trackTicket();
+}
+function trackTicket(){
+  let no=document.getElementById("trackInput").value.trim(), t=getTickets().find(x=>x.ticketNo===no), box=document.getElementById("trackResult");
+  if(!t){box.innerHTML='<p class="muted">Ticket not found.</p>';return}
+  box.innerHTML=`<div class="ticket" onclick="openTicket('${t.ticketNo}')"><b>${t.ticketNo}</b><br>${t.subject}<br><span class="badge2 ${t.status==='Resolved'?'resolved':t.status==='Reopened'?'reopened':'pending'}">${t.status}</span><br><small>${t.office}</small></div>`;
+}
+function openTicket(no){
+  let t=getTickets().find(x=>x.ticketNo===no);
+  let responses=t.responses.length?t.responses.map(r=>`<div class="notice"><b>${r.by}</b><br>${r.text}<br><small>${r.date}</small></div>`).join(""):'<div class="notice">No office response yet. Your ticket is with the assigned office.</div>';
+  let feedback=t.feedback?`<div class="notice"><b>Your feedback:</b> ${t.feedback}/5</div>`:`<label>Rate the response</label><select id="rating"><option value="5">5 - Completely solved</option><option value="4">4 - Mostly solved</option><option value="3">3 - Partly solved</option><option value="2">2 - Not solved</option><option value="1">1 - Not solved at all</option></select><button class="btn success" onclick="giveFeedback('${t.ticketNo}')" style="margin-top:10px">Send Feedback</button>`;
+  document.getElementById("trackResult").innerHTML=`<div class="ticket"><h3>${t.ticketNo}</h3><p><b>${t.subject}</b></p><p>${t.message}</p><p><b>Office:</b> ${t.office}<br><b>Category:</b> ${t.category}<br><b>Priority:</b> ${t.priority}<br><b>Status:</b> ${t.status}</p><hr><h4>Office Response</h4>${responses}<hr><h4>Feedback</h4>${feedback}</div>`;
+}
+function giveFeedback(no){
+  let rating=+document.getElementById("rating").value,tickets=getTickets(),t=tickets.find(x=>x.ticketNo===no);
+  t.feedback=rating;if(rating<3)t.status="Reopened";saveTickets(tickets);openTicket(no);renderDashboard();
+}
+function renderDashboard(){
+  let ts=getTickets();
+  totalStat.textContent=ts.length;pendingStat.textContent=ts.filter(t=>["Assigned","In Progress"].includes(t.status)).length;
+  resolvedStat.textContent=ts.filter(t=>t.status==="Resolved").length;reopenedStat.textContent=ts.filter(t=>t.status==="Reopened").length;
+  ticketRows.innerHTML=ts.map(t=>`<tr><td>${t.ticketNo}</td><td>${t.name}<br><small>${t.studentNo}</small></td><td>${t.subject}</td><td>${t.office}</td><td>${t.priority}</td><td><span class="badge2 ${t.status==="Resolved"?"resolved":t.status==="Reopened"?"reopened":"pending"}">${t.status}</span></td><td><button class="btn" onclick="officeOpen('${t.ticketNo}')">Open</button></td></tr>`).join("")||'<tr><td colspan="7">No queries yet.</td></tr>';
+}
+function officeOpen(no){
+  let t=getTickets().find(x=>x.ticketNo===no), panel=document.getElementById("officePanel");panel.classList.remove("hidden");
+  panel.innerHTML=`<h2>${t.ticketNo}</h2><p><b>Student:</b> ${t.name} (${t.studentNo})</p><p><b>Email:</b> ${t.email}</p><p><b>Query:</b> ${t.message}</p><p><b>AI Classification:</b> ${t.category} → ${t.office} (${t.confidence}%)</p><label>Official Response</label><textarea id="officeResponse" placeholder="Write the response that will be sent to the student..."></textarea><label>Status</label><select id="officeStatus"><option>In Progress</option><option>Resolved</option><option>Waiting for Student</option><option>Reopened</option><option>Closed</option></select><button class="btn success" onclick="saveOffice('${t.ticketNo}')" style="margin-top:12px">Send Response to Student</button>`;
+  panel.scrollIntoView({behavior:"smooth"});
+}
+function saveOffice(no){
+  let response=document.getElementById("officeResponse").value.trim();if(!response){alert("Write a response first.");return}
+  let ts=getTickets(),t=ts.find(x=>x.ticketNo===no);t.responses.push({by:"University Office",text:response,date:new Date().toLocaleString()});t.status=document.getElementById("officeStatus").value;saveTickets(ts);alert("Response sent to the student.");renderDashboard();officeOpen(no);
+}
+function askAI(){
+  let input=document.getElementById("chatInput"),text=input.value.trim();if(!text)return;
+  let chat=document.getElementById("chat"),c=classify(text);
+  chat.innerHTML+=`<div class="msg user">${text}</div>`;
+  let reply=c.category==="General"?`I couldn't confidently identify the office. Please submit a full ticket so the Student Support / Help Desk can review it.`:`This looks like a <b>${c.category}</b> issue. The appropriate office is <b>${c.office}</b>. You can submit the full query using the form and I will create a ticket for you.`;
+  chat.innerHTML+=`<div class="msg ai"><b>MICRAJ AI:</b> ${reply}</div>`;input.value="";chat.scrollTop=chat.scrollHeight;
+}
+</script>
+</body>
+</html>
